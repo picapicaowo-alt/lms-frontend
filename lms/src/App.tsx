@@ -14,7 +14,7 @@ const PostDetail = lazy(() => import("./sections/posts/post-detail"));
 const Roster = lazy(() => import("./pages/RosterPage"));
 const Profile = lazy(() => import("./pages/profile"));
 const CreateContent = lazy(() => import("./sections/dashboard/new-content/create-content"));
-const CreateGroup = lazy(() => import("./sections/roster/createGroup"));
+const Groups = lazy(() => import("./pages/GroupsPage"));
 const Chat = lazy(() => import("./pages/chat"));
 const AIBot = lazy(() => import("./pages/aibot"));
 const Settings = lazy(() => import("./pages/settings"));
@@ -105,7 +105,10 @@ const App = () => {
               <Route path="profile" element={<Profile/>}/>
               <Route path="course/add-content" element={<CourseCreatePage/>}/>
               <Route path="create/:contentType" element={<CreateContent/>}/>
-              <Route path="roster/create" element={<CreateGroup/>}/>
+              {/* Group sets belong to a course, so the route carries one.
+                  The old /roster/create screen posted to /grouping/* on the
+                  retired backend. */}
+              <Route path="course/:courseId/groups" element={<Groups/>}/>
               <Route path="chat" element={<Chat/>}/>
               <Route path="aibot" element={<AIBot/>}/>
               <Route path="settings" element={<Settings/>}/>

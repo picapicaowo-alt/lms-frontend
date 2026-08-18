@@ -1,0 +1,291 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2rem 2.5rem;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+.title {
+    font-size: t.$fs-h1;
+    font-weight: t.$fw-extrabold;
+    color: t.$text;
+}
+
+.status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 3rem 1rem;
+    color: t.$text-muted;
+    font-size: t.$fs-label;
+}
+
+.error {
+    font-size: t.$fs-caption;
+    color: t.$danger;
+}
+
+.hint {
+    margin-top: 0.5rem;
+    font-size: t.$fs-caption;
+    color: t.$brand;
+}
+
+.primary {
+    padding: 0.5rem 1.1rem;
+    border-radius: t.$radius-control;
+    background-color: t.$brand;
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+}
+
+.danger {
+    color: t.$danger;
+}
+
+// ------------------------------------------------------------- set switcher
+
+.setBar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.setChip {
+    padding: 0.45rem 1rem;
+    border-radius: t.$radius-pill;
+    border: 1px solid t.$border;
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+    cursor: pointer;
+
+    &:hover {
+        border-color: t.$brand;
+    }
+}
+
+.setChipActive {
+    background-color: t.$brand;
+    border-color: t.$brand;
+    color: #ffffff;
+}
+
+.newSet {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.newSetInput,
+.newGroupInput {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid t.$border;
+    border-radius: t.$radius-control;
+    font-size: t.$fs-caption;
+    outline: none;
+
+    &:focus {
+        border-color: t.$brand;
+    }
+}
+
+// -------------------------------------------------------------------- panel
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.panelHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.setName {
+    font-size: t.$fs-card-title;
+    font-weight: t.$fw-bold;
+    color: t.$text;
+}
+
+.setMeta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.2rem;
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+}
+
+.lockTag {
+    padding: 0.1rem 0.5rem;
+    border-radius: t.$radius-pill;
+    background-color: t.$neutral-fill;
+    color: t.$text-muted;
+}
+
+.panelActions {
+    display: flex;
+    gap: 0.75rem;
+
+    button {
+        font-size: t.$fs-caption;
+        color: t.$text-muted;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            color: t.$brand;
+            text-decoration: underline;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+}
+
+// ------------------------------------------------------------------- groups
+
+.groupGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
+}
+
+.groupCard,
+.newGroupCard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem;
+    border-radius: t.$radius-card;
+    background-color: t.$card-bg;
+    border: 1px solid t.$border;
+}
+
+.newGroupCard {
+    border-style: dashed;
+    justify-content: center;
+}
+
+.groupHeader {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.groupName {
+    font-size: t.$fs-item-sub;
+    font-weight: t.$fw-semibold;
+    color: t.$text;
+}
+
+.groupCount {
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+}
+
+.groupEmpty {
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+}
+
+.memberList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.member {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: t.$fs-caption;
+    color: t.$text;
+}
+
+.groupFooter {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid t.$border;
+}
+
+.linkAction {
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        color: t.$brand;
+        text-decoration: underline;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+// ---------------------------------------------------------------- ungrouped
+
+.ungrouped {
+    padding: 1rem 1.15rem;
+    border-radius: t.$radius-card;
+    background-color: t.$subcard-bg;
+}
+
+.ungroupedTitle {
+    font-size: t.$fs-label;
+    font-weight: t.$fw-semibold;
+    color: t.$text;
+    margin-bottom: 0.6rem;
+}
+
+.ungroupedList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.studentChip {
+    padding: 0.35rem 0.8rem;
+    border-radius: t.$radius-pill;
+    border: 1px solid t.$border;
+    background-color: t.$card-bg;
+    font-size: t.$fs-caption;
+    color: t.$text;
+    cursor: pointer;
+
+    &:hover {
+        border-color: t.$brand;
+    }
+}
+
+.studentChipActive {
+    background-color: t.$brand;
+    border-color: t.$brand;
+    color: #ffffff;
+}
