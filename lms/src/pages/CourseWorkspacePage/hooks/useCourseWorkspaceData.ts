@@ -30,6 +30,10 @@ export interface CourseWorkspaceData {
   refetch: () => void;
 }
 
+const EMPTY_WEEKS: CourseWeek[] = [];
+const EMPTY_SESSIONS: CourseSession[] = [];
+const EMPTY_ASSIGNMENTS: AssignmentSummary[] = [];
+
 const FIVE_MINUTES = 5 * 60 * 1000;
 
 const shared = {
@@ -83,9 +87,15 @@ export const useCourseWorkspaceData = (): CourseWorkspaceData => {
   return {
     courseId: id,
     course: course.data,
-    weeks: weeks.data ?? [],
-    sessions: sessions.data ?? [],
-    assignments: assignments.data ?? [],
+    // One shared empty array rather than a fresh `[]` each render. A new
+    // literal changes identity on every pass, and an effect that depends on
+    // one of these — the store sync does — then re-runs forever: it writes to
+    // the store, the store re-renders this hook, and the literal is new again.
+    // React Query's own data is already reference-stable, so only the fallback
+    // needed fixing.
+    weeks: weeks.data ?? EMPTY_WEEKS,
+    sessions: sessions.data ?? EMPTY_SESSIONS,
+    assignments: assignments.data ?? EMPTY_ASSIGNMENTS,
     // A disabled query stays pending forever, so without an id this would
     // otherwise report a load that never finishes.
     isLoading: enabled && (course.isPending || weeks.isPending),
