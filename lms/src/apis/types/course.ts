@@ -195,12 +195,27 @@ export interface CourseDetailDTO {
   assignments: AssignmentPreview[];
 }
 
+/**
+ * Body of `POST /v2/courses`.
+ *
+ * Term dates are required — the server refuses a course without them
+ * ("termStartDate is required") and rejects an end date before the start.
+ * The design has no field for either.
+ *
+ * `primaryInstructorUserId` is optional for a caller whose platform level is
+ * INSTRUCTOR, who becomes the primary instructor; an admin must name one.
+ * `tenantId` defaults to the caller's tenant and mismatching it is refused.
+ */
 export interface CreateCourseRequest {
   courseCode: string;
-  name: string;
-  description: string;
-  school: string;
-  semester: string;
+  title: string;
+  /** `YYYY-MM-DD`. */
+  termStartDate: string;
+  termEndDate: string;
+  description?: string;
+  location?: string;
+  primaryInstructorUserId?: number;
+  tenantId?: number;
 }
 
 export interface CreateCourseUnitRequest {

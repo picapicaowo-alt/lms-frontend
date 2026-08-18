@@ -6,6 +6,7 @@
   CourseSession,
   CourseSummary,
   CourseWeek,
+  CreateCourseRequest,
   BatchStudentEnrollResponse,
   CourseMember,
   MemberPageResponse,
@@ -118,6 +119,21 @@ export class CourseApiService {
     }
   }
   
+  /**
+   * Creates a course, which starts Active with the caller as primary
+   * instructor unless one is named.
+   *
+   * Not `/v2/courses/new` — that path never existed on this backend.
+   */
+  async createCourse(request: CreateCourseRequest): Promise<ApiResponse<CourseResponse>> {
+    try {
+      return await this.apiClient.post<CourseResponse>('/v2/courses', request, idempotent());
+    } catch (error) {
+      console.error('Failed to create course', error);
+      throw error;
+    }
+  }
+
   /**
    * Edits a course. Course Manager only.
    *
