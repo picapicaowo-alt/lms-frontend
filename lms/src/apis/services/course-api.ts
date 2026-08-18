@@ -5,6 +5,7 @@
   CourseResponse,
   CourseSession,
   CourseSummary,
+  CourseMaterial,
   CourseWeek,
   CreateCourseRequest,
   BatchStudentEnrollResponse,
@@ -361,6 +362,82 @@ export class CourseApiService {
       );
     } catch (error) {
       console.error(`Failed to unpublish week: ${weekId}`, error);
+      throw error;
+    }
+  }
+
+  // ------------------------------------------------------------ materials
+
+  /**
+   * Uploads files into a week. Course Manager, or an active TA.
+   *
+   * Multipart, and the Idempotency-Key is enforced before anything reaches
+   * storage — without it the request is refused outright with
+   * IDEMPOTENCY_KEY_REQUIRED.
+   *
+   * Accepts PDF, Office documents, zip and common images; anything else comes
+   * back as UNSUPPORTED_FILE_TYPE. Default size cap is 200 MB.
+   */
+  async uploadMaterials(
+    courseId: number,
+    weekId: number,
+    files: File[]
+  ): Promise<ApiResponse<CourseMaterial[]>> {
+    try {
+      const form = new FormData();
+      files.forEach((file) => form.append('files', file));
+
+      // Content-Type is left unset on purpose: the browser has to add the
+      // multipart boundary, and naming the type here would drop it.
+      return await this.apiClient.post<CourseMaterial[]>(
+        `/v2/courses/${courseId}/weeks/${weekId}/materials`,
+        form,
+        idempotent()
+      );
+    } catch (error) {
+      console.error(`Failed to upload materials to week ${weekId}`, error);
+      throw error;
+    }
+  }
+
+  async deleteMaterial(
+    courseId: number,
+    weekId: number,
+    materialId: number
+  ): Promise<ApiResponse<void>> {
+    try {
+      return await this.apiClient.delete<void>(
+        `/v2/courses/${courseId}/weeks/${weekId}/materials/${materialId}`
+      );
+    } catch (error) {
+      console.error(`Failed to delete material ${materialId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetches a material as a Blob.
+   *
+   * Not a plain link. The endpoint needs the bearer token, which an anchor
+   * cannot send — an unauthenticated request returns 401. The `downloadUrl` on
+   * the material is no help either: it points at the bare host with no port,
+   * so it does not even reach this deployment.
+   *
+   * The response is a binary stream rather than the usual JSON envelope.
+   */
+  async downloadMaterial(
+    courseId: number,
+    weekId: number,
+    materialId: number
+  ): Promise<Blob> {
+    try {
+      const response = await this.apiClient.getClient().get<Blob>(
+        `/v2/courses/${courseId}/weeks/${weekId}/materials/${materialId}/download`,
+        {responseType: 'blob'}
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to download material ${materialId}`, error);
       throw error;
     }
   }

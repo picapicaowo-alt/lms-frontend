@@ -1,7 +1,10 @@
-import React from "react";
+import React, {useRef, useState} from "react";
+import {useMutation} from "@tanstack/react-query";
 import styles from "../CourseDetailView/index.module.scss";
 import editStyles from "./index.module.scss";
-import {CourseWeek} from "@/apis";
+import {ApiError, CourseWeek} from "@/apis";
+import {courseApiService} from "@/apis/services/course-api";
+import {MaterialList} from "../MaterialList";
 
 interface WeekContentCardProps {
   courseId: number;
@@ -9,44 +12,94 @@ interface WeekContentCardProps {
   onChanged: () => void;
 }
 
+/** What the API accepts; anything else returns UNSUPPORTED_FILE_TYPE. */
+const ACCEPTED = '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.png,.jpg,.jpeg,.gif,.webp';
+
 /**
- * The Course Content card in edit mode.
+ * Course Content in edit mode: the week's materials, and a way to add more.
  *
  * The design puts a block editor here — a titled document with slash commands
- * and AI actions. A week has no rich-text field to hold one: it holds
- * materials, which are files and links. So this shows the week's materials and
- * says plainly that uploading is not wired up yet, rather than presenting an
- * editor whose contents could never be saved.
+ * and Ask AI. A week has no rich-text field to store one; it holds materials,
+ * which are files and links. Rather than show an editor whose contents could
+ * never be saved, this manages the thing the week actually contains.
  */
-export const WeekContentCard: React.FC<WeekContentCardProps> = ({week}) => (
-  <section className={styles.card}>
-    <p className={styles.cardLabel}>Course Content</p>
+export const WeekContentCard: React.FC<WeekContentCardProps> = ({courseId, week, onChanged}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
 
-    {!week ? (
-      <p className={styles.cardEmpty}>Add a week to start putting content in it.</p>
-    ) : (
-      <>
-        <h2 className={styles.contentTitle}>{week.title}</h2>
+  const upload = useMutation({
+    mutationFn: (files: File[]) => courseApiService.uploadMaterials(courseId, week!.id, files),
+    onSuccess: onChanged,
+  });
 
-        {week.materials.length === 0 ? (
-          <p className={styles.cardEmpty}>No materials in this week yet.</p>
-        ) : (
-          <ul className={styles.materialList}>
-            {week.materials.map((material) => (
-              <li key={material.id} className={styles.material}>
-                <span className={styles.materialIcon} aria-hidden="true">
-                  {material.materialType === 'LINK' ? '🔗' : (material.extension ?? 'file').toUpperCase()}
-                </span>
-                <span className={styles.materialName}>{material.displayName}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+  // The server names the reason — unsupported type, too large, archived
+  // course — and each is something the user can act on.
+  const failure = upload.isError
+    ? ((upload.error as unknown as ApiError)?.details as {message?: string} | undefined)?.message
+      ?? "Couldn't upload those files."
+    : null;
 
-        <p className={editStyles.notice}>
-          Uploading materials isn&apos;t available here yet.
-        </p>
-      </>
-    )}
-  </section>
-);
+  const send = (files: FileList | null) => {
+    if (!files || files.length === 0 || !week) return;
+    upload.mutate(Array.from(files));
+  };
+
+  return (
+    <section className={styles.card}>
+      <p className={styles.cardLabel}>Course Content</p>
+
+      {!week ? (
+        <p className={styles.cardEmpty}>Add a week to start putting content in it.</p>
+      ) : (
+        <>
+          <h2 className={styles.contentTitle}>{week.title}</h2>
+
+          <MaterialList
+            courseId={courseId}
+            weekId={week.id}
+            materials={week.materials}
+            canDelete
+            onDeleted={onChanged}
+          />
+
+          <div
+            className={`${styles.uploadArea} ${dragging ? styles.uploadAreaActive : ''}`}
+            onClick={() => inputRef.current?.click()}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(event) => {
+              event.preventDefault();
+              setDragging(false);
+              send(event.dataTransfer.files);
+            }}
+          >
+            <span>
+              {upload.isPending
+                ? 'Uploading…'
+                : <>Drag and drop files here or <span className={styles.uploadChoose}>Choose</span> file to upload</>}
+            </span>
+            <span>PDF, Office documents, zip and images. Up to 200 MB.</span>
+          </div>
+
+          <input
+            ref={inputRef}
+            type="file"
+            multiple
+            accept={ACCEPTED}
+            hidden
+            onChange={(event) => {
+              send(event.target.files);
+              // Reset so re-picking the same file fires change again.
+              event.target.value = '';
+            }}
+          />
+
+          {failure && <p className={editStyles.error} role="alert">{failure}</p>}
+        </>
+      )}
+    </section>
+  );
+};

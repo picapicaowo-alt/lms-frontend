@@ -18,7 +18,7 @@ import {ScheduleCard} from "./ScheduleCard";
  */
 export const CourseDetailView: React.FC = () => {
   const {
-    course, weeks, sessions, assignments,
+    courseId, course, weeks, sessions, assignments,
     isLoading, isError, sessionsFailed, assignmentsFailed, refetch,
   } = useCourseWorkspaceData();
 
@@ -36,7 +36,10 @@ export const CourseDetailView: React.FC = () => {
     return <div className={styles.status}>Loading course…</div>;
   }
 
-  if (isError || !course) {
+  // courseId is null only on a route without a course, which this screen is
+  // never reached from — isError already covers it, and narrowing here lets
+  // the cards take a plain number.
+  if (isError || !course || courseId === null) {
     return (
       <div className={styles.status} role="alert">
         <p>This course couldn&apos;t be loaded.</p>
@@ -62,7 +65,7 @@ export const CourseDetailView: React.FC = () => {
       </aside>
 
       <div className={styles.cards}>
-        <ContentCard week={activeWeek}/>
+        <ContentCard courseId={courseId} week={activeWeek}/>
         <AssignmentsCard assignments={assignments} failed={assignmentsFailed}/>
         <ScheduleCard sessions={sessions} failed={sessionsFailed}/>
       </div>

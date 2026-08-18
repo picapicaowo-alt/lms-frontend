@@ -280,3 +280,61 @@
 .chipCyan { background-color: t.$type-cyan-subtle; }
 .chipGreen { background-color: t.$type-green-subtle; }
 .chipOrange { background-color: t.$type-orange-subtle; }
+
+.materialAction {
+    flex: 0 0 auto;
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        color: t.$brand;
+        text-decoration: underline;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.materialDanger:hover:not(:disabled) {
+    color: t.$danger;
+}
+
+.materialError {
+    margin-top: 0.5rem;
+    font-size: t.$fs-caption;
+    color: t.$danger;
+}
+
+// Dashed drop target, as the design draws the empty upload area.
+.uploadArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding: 1.5rem 1rem;
+    border: 1px dashed t.$border;
+    border-radius: t.$radius-card;
+    text-align: center;
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+    cursor: pointer;
+    transition: border-color 0.15s, background-color 0.15s;
+
+    &:hover {
+        border-color: t.$brand;
+    }
+}
+
+.uploadAreaActive {
+    border-color: t.$brand;
+    background-color: t.$brand-subtle;
+}
+
+.uploadChoose {
+    color: t.$brand;
+    font-weight: t.$fw-semibold;
+}
