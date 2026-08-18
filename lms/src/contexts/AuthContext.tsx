@@ -1,5 +1,6 @@
 import {createContext, useContext, useState, useEffect, ReactNode} from 'react';
-import {LoginResponse} from "@/apis";
+import {LoginResponse, V2ApiClient} from "@/apis";
+import {authApiService} from "@/apis/services/auth-api";
 
 interface AuthContextValue {
   user: LoginResponse | null;
@@ -67,9 +68,21 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
     setUser(userData);
   };
   
-  const logout = () => {
+  /**
+   * Ends the session on the server as well as in this tab.
+   *
+   * Clearing localStorage only discards the access token. The refresh token
+   * lives in an HttpOnly cookie the browser keeps sending, and it is good for
+   * about two weeks — so without calling the endpoint the session survived
+   * "logging out" and could be resumed. The call is allowed without a bearer
+   * token precisely because the cookie identifies the session.
+   *
+   * The local side happens regardless of the result: a user who asked to log
+   * out must not be left signed in because the network failed.
+   */
+  const logout = async () => {
     const rocketChatIframe = document.querySelector('iframe[title="RocketChat"]') as HTMLIFrameElement | null;
-    
+
     if (rocketChatIframe?.contentWindow) {
       try {
         rocketChatIframe.contentWindow.postMessage({
@@ -80,13 +93,17 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
         // Ignored
       }
     }
-    
+
+    try {
+      await authApiService.logout();
+    } catch (error) {
+      console.error('Server logout failed; clearing the local session anyway', error);
+    }
+
+    V2ApiClient.clearAccessToken();
     localStorage.clear();
     setUser(null);
-    
-    setTimeout(() => {
-      window.location.href = '/login';
-    }, 500);
+    window.location.href = '/login';
   };
   
   return (

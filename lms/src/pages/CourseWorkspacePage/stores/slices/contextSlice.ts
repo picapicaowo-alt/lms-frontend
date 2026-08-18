@@ -22,7 +22,15 @@ export const createContextSlice: StateCreator<
   let previousWorkspaceMode: WorkspaceMode = "view";
   
   return {
-    role: "teacher",
+    // Fail closed. This defaulted to "teacher" and setRole was never called,
+    // so every user — students included — was shown the instructor controls.
+    // Starting as "student" means a missed setRole hides a control that should
+    // have been there, rather than offering one the user may not use.
+    //
+    // Hiding a control is not authorisation on its own: the server checks
+    // every write, and it must (BND-03). This is about not presenting actions
+    // that will be rejected.
+    role: "student",
     workspaceMode: "view",
     detailWorkspaceProps: null,
     

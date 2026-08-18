@@ -2,6 +2,7 @@ import React from "react";
 import {useCourseWorkspaceStore} from "../stores/useCourseWorkspaceStore";
 import {CourseDetailDTO, CourseResponse, CourseWeek} from "@/apis";
 import {useCourseWorkspaceData} from "./useCourseWorkspaceData";
+import {useRequiredAuth} from "@/contexts/RequiredAuthContext";
 
 /**
  * Mirrors the loaded course into the workspace store, which edit mode and the
@@ -47,7 +48,8 @@ const toCourseDetail = (course: CourseResponse, weeks: CourseWeek[]): CourseDeta
 });
 
 export const useCourseEdit = () => {
-  const {loadCourseInfo} = useCourseWorkspaceStore();
+  const {loadCourseInfo, setRole} = useCourseWorkspaceStore();
+  const {user} = useRequiredAuth();
   const {course, weeks} = useCourseWorkspaceData();
 
   React.useEffect(() => {
@@ -55,4 +57,23 @@ export const useCourseEdit = () => {
       loadCourseInfo(toCourseDetail(course, weeks));
     }
   }, [course, weeks]);
+
+  /**
+   * Decides whether this user gets the teaching controls for this course.
+   *
+   * Course role, not platform level: someone can teach one course and be
+   * enrolled as a student in another (ROLE-03), so a global INSTRUCTOR flag
+   * would hand out edit controls in courses they only attend.
+   *
+   * The check is the primary instructor of this specific course. A TA is
+   * therefore treated as a student here, which under-grants rather than
+   * over-grants — a TA may upload materials, and that will need the course
+   * membership endpoint, which only a Course Manager can read.
+   */
+  React.useEffect(() => {
+    if (!course) return;
+    const instructorId = course.primaryInstructor?.userId ?? course.instructorId;
+    const isPrimaryInstructor = instructorId != null && instructorId === user.userId;
+    setRole(isPrimaryInstructor ? "teacher" : "student");
+  }, [course, user.userId]);
 };
