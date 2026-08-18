@@ -13,7 +13,6 @@ const LoginPage: React.FC = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const getFieldError = (field: string) => fieldErrors[field] || '';
   const [rememberMe, setRememberMe] = useState(false);
-  const API_DOMAIN = import.meta.env.VITE_SIGNUP_API_DOMAIN_NAME;
   const {login} = useAuth();
   
   const navigate = useNavigate();
@@ -43,39 +42,6 @@ const LoginPage: React.FC = () => {
       }
     }
   }, [navigate]);
-  
-  const handleMicrosoftLogin = async () => {
-    try {
-      window.location.href = `${API_DOMAIN}/thirdParty/microsoft`;
-    } catch (e) {
-      console.error("Error getting Microsoft login URL:", e);
-    }
-  };
-  
-  const handleLinkedInLogin = async () => {
-    try {
-      window.location.href = `${API_DOMAIN}/thirdParty/linkedin`;
-    } catch (e) {
-      console.error("Error getting LinkedIn login URL:", e);
-    }
-  };
-  
-  const handleGoogleLogin = async () => {
-    try {
-      window.location.href = `${API_DOMAIN}/thirdParty/google`;
-    } catch (e) {
-      console.error("Error getting Google login URL:", e);
-    }
-  };
-  
-  const handleFacebookLogin = async () => {
-    try {
-      window.location.href = `${API_DOMAIN}/thirdParty/facebook`;
-    } catch (e) {
-      console.error("Error getting Facebook login URL:", e);
-    }
-  };
-  
   
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -145,34 +111,11 @@ const LoginPage: React.FC = () => {
             {t("login.subtitle")}
           </p>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <button onClick={handleGoogleLogin}
-                    className="flex items-center justify-center gap-2 bg-[#F3F4F8] text-black py-3 rounded-lg text-sm font-normal cursor-pointer">
-              <Icon icon="flat-color-icons:google" className="w-5 h-5"/>
-              {t("login.socialGoogle")}
-            </button>
-            <button onClick={handleMicrosoftLogin}
-                    className="flex items-center justify-center gap-2 bg-[#F3F4F8] text-black py-3 rounded-lg text-sm font-normal cursor-pointer">
-              <Icon icon="logos:microsoft-icon" className="w-5 h-5"/>
-              {t("login.socialMicrosoft")}
-            </button>
-            <button onClick={handleLinkedInLogin}
-                    className="flex items-center justify-center gap-2 bg-[#F3F4F8] text-black py-3 rounded-lg text-sm font-normal cursor-pointer">
-              <Icon icon="logos:linkedin-icon" className="w-5 h-5"/>
-              {t("login.socialLinkedIn")}
-            </button>
-            <button onClick={handleFacebookLogin}
-                    className="flex items-center justify-center gap-2 bg-[#F3F4F8] text-black py-3 rounded-lg text-sm font-normal cursor-pointer">
-              <Icon icon="logos:facebook" className="w-5 h-5"/>
-              {t("login.socialFacebook")}
-            </button>
-          </div>
-          
-          <div className="flex items-center gap-2 my-4">
-            <div className="flex-1 border-t border-[#E2E8F0]"></div>
-            <p className="text-xs text-[#2D3748]">{t("login.dividerText")}</p>
-            <div className="flex-1 border-t border-[#E2E8F0]"></div>
-          </div>
+          {/* No social sign-in. There is no OAuth contract in V1 and the auth
+              module has no social endpoint — these buttons led to
+              /thirdParty/*, which this backend does not serve, so every one of
+              them was a dead end. The divider went with them: it only existed
+              to separate them from the email form below. */}
           
           <form className="space-y-4 mt-6" onSubmit={handleSubmit}>
             <input

@@ -90,43 +90,6 @@ export default function SignUpView() {
     }
   };
   
-  const handleGoogleSignup = async () => {
-    try {
-      console.log(`${API_DOMAIN}`)
-      
-      window.location.href = `${API_DOMAIN}/thirdParty/google`;
-    } catch (err) {
-      setError(t("signupErrors.thirdPartyGoogle"));
-    }
-  };
-  
-  const handleMicrosoftSignup = async () => {
-    try {
-      window.location.href = `${API_DOMAIN}/thirdParty/microsoft`;
-    } catch (err) {
-      setError(t("signupErrors.thirdPartyMicrosoft"));
-    }
-  };
-  
-  const handleLinkedInSignup = async () => {
-    try {
-      window.location.href = `${API_DOMAIN}/thirdParty/linkedin`;
-      if (response.data.code === "200" && response.data?.data) {
-        window.location.href = response.data.data;
-      }
-    } catch (err) {
-      setError(t("signupErrors.thirdPartyLinkedIn"));
-    }
-  };
-  
-  const handleFacebookSignup = async () => {
-    try {
-      window.location.href = `${API_DOMAIN}/thirdParty/facebook`;
-    } catch (err) {
-      setError(t("signupErrors.thirdPartyFacebook"));
-    }
-  };
-  
   const handleChange = (setter) => (e) => {
     setter(e.target.value);
   };
@@ -263,45 +226,10 @@ export default function SignUpView() {
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <button
-                      type="button"
-                      onClick={handleGoogleSignup}
-                      className="flex items-center justify-center gap-2 bg-[#F3F4F8] text-black py-3 rounded-lg text-[14px] font-normal cursor-pointer"
-                    >
-                      <Icon icon="flat-color-icons:google" className="w-5 h-5"/>
-                      {t("signup.socialGoogle")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleMicrosoftSignup}
-                      className="flex items-center justify-center gap-2 bg-[#F3F4F8] text-black py-3 rounded-lg text-[14px] cursor-pointer"
-                    >
-                      <Icon icon="logos:microsoft-icon" className="w-5 h-5"/>
-                      {t("signup.socialMicrosoft")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleLinkedInSignup}
-                      className="flex items-center justify-center gap-2 bg-[#F3F4F8] text-black py-3 rounded-lg text-[14px] font-normal cursor-pointer"
-                    >
-                      <Icon icon="logos:linkedin-icon" className="w-5 h-5"/>
-                      {t("signup.socialLinkedIn")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleFacebookSignup}
-                      className="flex items-center justify-center gap-2 bg-[#F3F4F8] text-black py-3 rounded-lg text-[14px] font-normal cursor-pointer"
-                    >
-                      <Icon icon="logos:facebook" className="w-5 h-5"/>
-                      {t("signup.socialFacebook")}
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-2 my-10">
-                    <div className="flex-1 border-t border-[#E2E8F0]"></div>
-                    <p className="text-xs text-[#2D3748]">{t("signup.dividerText")}</p>
-                    <div className="flex-1 border-t border-[#E2E8F0]"></div>
-                  </div>
+                  {/* No social sign-up. V1 has no OAuth contract and the auth
+                      module exposes no social endpoint — these led to
+                      /thirdParty/*, which this backend does not serve. The
+                      divider went too: it only separated them from the form. */}
                   <div className="space-y-6">
                     <div className="relative">
                       <input
