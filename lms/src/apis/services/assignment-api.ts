@@ -3,8 +3,11 @@
   AssignmentForEditResponse,
   AssignmentForReviewResponse,
   AssignmentForSubmissionResponse,
+  AssignmentResponse,
   AssignmentSubmissionRequest,
   AssignmentSummary,
+  CreateAssignmentBody,
+  idempotent,
   CreateSubmissionReviewRequest,
   EditAssignmentRequest,
   UpdateSubmissionReviewRequest,
@@ -33,6 +36,74 @@ export class AssignmentApiService {
       );
     } catch (error) {
       console.error(`Failed to get assignment summaries for courseId: ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Creates an assignment. Instructor only, and always as a Draft — students
+   * see nothing until it is published.
+   */
+  async createAssignment(
+    courseId: number,
+    body: CreateAssignmentBody
+  ): Promise<ApiResponse<AssignmentResponse>> {
+    try {
+      return await this.apiClient.post<AssignmentResponse>(
+        `/v2/courses/${courseId}/assignments`,
+        body,
+        idempotent()
+      );
+    } catch (error) {
+      console.error(`Failed to create an assignment in course ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /** Makes it visible and submittable. Idempotent; notifies active students. */
+  async publishAssignment(
+    courseId: number,
+    assignmentId: number
+  ): Promise<ApiResponse<AssignmentResponse>> {
+    try {
+      return await this.apiClient.post<AssignmentResponse>(
+        `/v2/courses/${courseId}/assignments/${assignmentId}/publish`,
+        undefined,
+        idempotent()
+      );
+    } catch (error) {
+      console.error(`Failed to publish assignment ${assignmentId}`, error);
+      throw error;
+    }
+  }
+
+  /** Refused with ASSIGNMENT_HAS_SUBMISSIONS once anyone has submitted. */
+  async unpublishAssignment(
+    courseId: number,
+    assignmentId: number
+  ): Promise<ApiResponse<AssignmentResponse>> {
+    try {
+      return await this.apiClient.post<AssignmentResponse>(
+        `/v2/courses/${courseId}/assignments/${assignmentId}/unpublish`,
+        undefined,
+        idempotent()
+      );
+    } catch (error) {
+      console.error(`Failed to unpublish assignment ${assignmentId}`, error);
+      throw error;
+    }
+  }
+
+  async deleteAssignment(
+    courseId: number,
+    assignmentId: number
+  ): Promise<ApiResponse<void>> {
+    try {
+      return await this.apiClient.delete<void>(
+        `/v2/courses/${courseId}/assignments/${assignmentId}`
+      );
+    } catch (error) {
+      console.error(`Failed to delete assignment ${assignmentId}`, error);
       throw error;
     }
   }

@@ -124,3 +124,57 @@ export interface AssignmentSummary {
   /** Student callers only; omitted for staff. */
   submissionStatus?: 'NotSubmitted' | 'Submitted' | 'SubmittedLate' | 'NotSubmittedClosed';
 }
+
+/**
+ * Body of `POST /v2/courses/{courseId}/assignments`.
+ *
+ * `dueAt` is wall-clock time in the course tenant's zone, not UTC — sending
+ * "2026-09-30T23:59:00" produced dueAtUtc "2026-10-01T06:59:00Z" on a
+ * Los Angeles tenant. That is what INV-06 asks for: deadlines are entered in
+ * the institution's timezone and displayed in the reader's.
+ *
+ * Rules the server enforces, each confirmed against dev:
+ *  - title, pointsPossible and dueAt are required
+ *  - maxFileCount 1..10, maxFileSizeBytes 1..104857600
+ *  - allowedFileTypes needs at least one entry; dots are stripped, values
+ *    lower-cased and de-duplicated
+ *  - lateUntil, when given, must not precede dueAt
+ *  - submissionType "Group" requires an existing groupSetId
+ */
+export interface CreateAssignmentBody {
+  title: string;
+  description?: string;
+  pointsPossible: number;
+  /** `YYYY-MM-DDTHH:mm:ss`, tenant local. */
+  dueAt: string;
+  lateUntil?: string | null;
+  allowedFileTypes: string[];
+  maxFileSizeBytes: number;
+  maxFileCount: number;
+  submissionType?: 'Individual' | 'Group';
+  groupSetId?: number | null;
+}
+
+export type AssignmentState = 'Draft' | 'Published';
+
+/** An assignment as the create and detail endpoints return it. */
+export interface AssignmentResponse {
+  id: number;
+  courseId: number;
+  title: string;
+  description: string;
+  pointsPossible: number;
+  dueAtUtc: string;
+  dueAtLocal: string;
+  timezone: string;
+  submissionType: 'Individual' | 'Group';
+  allowedFileTypes: string[];
+  maxFileSizeBytes: number;
+  maxFileCount: number;
+  /** Always Draft on creation; students see it only once Published. */
+  state: AssignmentState;
+  hasRubric: boolean;
+  createdBy: number;
+  createdAt: string;
+  updatedAt: string;
+}

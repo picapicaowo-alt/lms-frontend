@@ -1,0 +1,154 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    // Blurred, not dimmed — design spec section 1.
+    backdrop-filter: blur(t.$modal-backdrop-blur);
+    -webkit-backdrop-filter: blur(t.$modal-backdrop-blur);
+    background-color: rgba(t.$text, 0.08);
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 42rem;
+    max-height: 90vh;
+    background-color: t.$card-bg;
+    border-radius: t.$radius-modal;
+    box-shadow: 0 12px 48px rgba(t.$text, 0.14);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 1.75rem 1rem;
+}
+
+.title {
+    font-size: t.$fs-modal-title;
+    font-weight: t.$fw-bold;
+    color: t.$text;
+}
+
+.close {
+    width: 2rem;
+    height: 2rem;
+    border-radius: t.$radius-control-sm;
+    color: t.$text-muted;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+        background-color: t.$subcard-bg;
+        color: t.$text;
+    }
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 1.75rem 1rem;
+    overflow-y: auto;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 1rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.label {
+    font-size: t.$fs-caption;
+    font-weight: t.$fw-semibold;
+    color: t.$text;
+}
+
+.optional {
+    margin-left: 0.35rem;
+    font-weight: t.$fw-regular;
+    color: t.$text-muted;
+}
+
+.input,
+.textarea {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid t.$border;
+    border-radius: t.$radius-control;
+    font-size: t.$fs-label;
+    color: t.$text;
+    background-color: t.$card-bg;
+    outline: none;
+
+    &:focus {
+        border-color: t.$brand;
+    }
+}
+
+.textarea {
+    resize: vertical;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: t.$fs-label;
+    color: t.$text;
+    cursor: pointer;
+}
+
+.error {
+    font-size: t.$fs-caption;
+    color: t.$danger;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.75rem 1.5rem;
+    border-top: 1px solid t.$border;
+}
+
+.cancel,
+.submit {
+    padding: 0.65rem 1.3rem;
+    border-radius: t.$radius-control;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+}
+
+.cancel {
+    background-color: t.$card-bg;
+    border: 1px solid t.$border;
+    color: t.$text;
+
+    &:hover:not(:disabled) {
+        background-color: t.$subcard-bg;
+    }
+}
+
+.submit {
+    background-color: t.$brand;
+    color: #ffffff;
+}

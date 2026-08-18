@@ -7,6 +7,7 @@ import {ContentCard} from "./ContentCard";
 import {AssignmentsCard} from "./AssignmentsCard";
 import {ScheduleCard} from "./ScheduleCard";
 import {SyllabusCard} from "../SyllabusCard";
+import {useCourseWorkspaceStore} from "../../stores/useCourseWorkspaceStore";
 
 /**
  * Course detail, view mode — see docs/design/13-course-detail-view.png.
@@ -23,6 +24,7 @@ export const CourseDetailView: React.FC = () => {
     isLoading, isError, sessionsFailed, assignmentsFailed, refetch,
   } = useCourseWorkspaceData();
 
+  const {role} = useCourseWorkspaceStore();
   const [activeWeekId, setActiveWeekId] = useState<number | null>(null);
 
   // Follow the design and open on the first week, but only once the weeks are
@@ -68,7 +70,15 @@ export const CourseDetailView: React.FC = () => {
       <div className={styles.cards}>
         <ContentCard courseId={courseId} week={activeWeek}/>
         <SyllabusCard courseId={courseId} canManage={false}/>
-        <AssignmentsCard assignments={assignments} failed={assignmentsFailed}/>
+        {/* Adding an assignment is an instructor action; the store's role is
+            set from this course, not the platform level (ROLE-03). */}
+        <AssignmentsCard
+          courseId={courseId}
+          assignments={assignments}
+          failed={assignmentsFailed}
+          canManage={role === 'teacher'}
+          onChanged={refetch}
+        />
         <ScheduleCard sessions={sessions} failed={sessionsFailed}/>
       </div>
     </div>
