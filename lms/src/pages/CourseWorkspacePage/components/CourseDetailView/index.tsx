@@ -6,6 +6,7 @@ import {WeekOutline} from "./WeekOutline";
 import {ContentCard} from "./ContentCard";
 import {AssignmentsCard} from "./AssignmentsCard";
 import {ScheduleCard} from "./ScheduleCard";
+import {SyllabusCard} from "../SyllabusCard";
 
 /**
  * Course detail, view mode — see docs/design/13-course-detail-view.png.
@@ -66,6 +67,7 @@ export const CourseDetailView: React.FC = () => {
 
       <div className={styles.cards}>
         <ContentCard courseId={courseId} week={activeWeek}/>
+        <SyllabusCard courseId={courseId} canManage={false}/>
         <AssignmentsCard assignments={assignments} failed={assignmentsFailed}/>
         <ScheduleCard sessions={sessions} failed={sessionsFailed}/>
       </div>

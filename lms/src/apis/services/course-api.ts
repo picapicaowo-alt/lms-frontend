@@ -7,6 +7,7 @@
   CourseSummary,
   CourseMaterial,
   CourseWeek,
+  SyllabusState,
   CreateCourseRequest,
   BatchStudentEnrollResponse,
   CourseMember,
@@ -362,6 +363,87 @@ export class CourseApiService {
       );
     } catch (error) {
       console.error(`Failed to unpublish week: ${weekId}`, error);
+      throw error;
+    }
+  }
+
+  // ------------------------------------------------------------- syllabus
+  //
+  // One versioned PDF per course. Reads are open to any visible member;
+  // writes are Course Manager only and fail with COURSE_ARCHIVED once the
+  // course is archived.
+
+  async getSyllabus(courseId: number): Promise<ApiResponse<SyllabusState>> {
+    try {
+      return await this.apiClient.get<SyllabusState>(`/v2/courses/${courseId}/syllabus`);
+    } catch (error) {
+      console.error(`Failed to get syllabus for course ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Posts or replaces the syllabus. PDF only; anything else is refused.
+   *
+   * Uploading over an existing one keeps the old version, which is what makes
+   * restore possible — this is a new version, not an overwrite.
+   */
+  async uploadSyllabus(courseId: number, file: File): Promise<ApiResponse<SyllabusState>> {
+    try {
+      const form = new FormData();
+      form.append('file', file);
+
+      return await this.apiClient.post<SyllabusState>(
+        `/v2/courses/${courseId}/syllabus`,
+        form,
+        idempotent()
+      );
+    } catch (error) {
+      console.error(`Failed to upload syllabus for course ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /** Brings back the previous version. Only offered when canRestorePrevious. */
+  async restoreSyllabus(courseId: number): Promise<ApiResponse<SyllabusState>> {
+    try {
+      return await this.apiClient.post<SyllabusState>(
+        `/v2/courses/${courseId}/syllabus/restore`,
+        undefined,
+        idempotent()
+      );
+    } catch (error) {
+      console.error(`Failed to restore syllabus for course ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /** A logical clear: the file stops being posted but versions are kept. */
+  async clearSyllabus(courseId: number): Promise<ApiResponse<SyllabusState>> {
+    try {
+      return await this.apiClient.delete<SyllabusState>(`/v2/courses/${courseId}/syllabus`);
+    } catch (error) {
+      console.error(`Failed to clear syllabus for course ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetches the syllabus PDF as a Blob.
+   *
+   * `inline` asks for the preview stream, which the server marks for display
+   * rather than download. Either way it needs the bearer token, so this
+   * cannot be a plain link.
+   */
+  async downloadSyllabus(courseId: number, inline = false): Promise<Blob> {
+    try {
+      const response = await this.apiClient.getClient().get<Blob>(
+        `/v2/courses/${courseId}/syllabus/${inline ? 'preview' : 'download'}`,
+        {responseType: 'blob'}
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to fetch syllabus for course ${courseId}`, error);
       throw error;
     }
   }

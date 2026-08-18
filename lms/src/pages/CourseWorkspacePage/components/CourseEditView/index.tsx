@@ -6,6 +6,7 @@ import {useCourseWorkspaceData} from "../../hooks/useCourseWorkspaceData";
 import {courseApiService} from "@/apis/services/course-api";
 import {formatCourseName} from "@/utils/course";
 import {ScheduleCard} from "../CourseDetailView/ScheduleCard";
+import {SyllabusCard} from "../SyllabusCard";
 import {WeekEditorList} from "./WeekEditorList";
 import {WeekContentCard} from "./WeekContentCard";
 
@@ -123,6 +124,7 @@ export const CourseEditView: React.FC = () => {
 
       <div className={styles.cards}>
         <WeekContentCard courseId={courseId} week={activeWeek} onChanged={invalidate}/>
+        <SyllabusCard courseId={courseId} canManage/>
         <ScheduleCard sessions={sessions} failed={sessionsFailed}/>
       </div>
     </div>

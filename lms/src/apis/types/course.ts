@@ -356,3 +356,29 @@ export interface BatchStudentEnrollResponse {
   failureCount: number;
   items: BatchEnrollItem[];
 }
+
+// -------------------------------------------------------------- syllabus
+
+/**
+ * The course syllabus — `GET /v2/courses/{courseId}/syllabus`.
+ *
+ * One PDF per course, versioned. The response is a discriminated union on
+ * `posted`, so a course that never had one is distinguishable from a course
+ * whose syllabus was cleared.
+ *
+ * Confirmed against dev: an unposted course returns `{"posted": false}` and
+ * nothing else, while a posted one carries the fields below.
+ */
+export type SyllabusState =
+  | {posted: false}
+  | {
+      posted: true;
+      versionId: number;
+      originalFilename: string;
+      contentType: string;
+      sizeBytes: number;
+      uploadedBy: number;
+      uploadedAt: string;
+      /** Course Managers only. True when a previous version can be restored. */
+      canRestorePrevious?: boolean;
+    };
