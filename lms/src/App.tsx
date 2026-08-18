@@ -15,7 +15,6 @@ const Roster = lazy(() => import("./pages/RosterPage"));
 const Profile = lazy(() => import("./pages/profile"));
 const CreateContent = lazy(() => import("./sections/dashboard/new-content/create-content"));
 const Groups = lazy(() => import("./pages/GroupsPage"));
-const Chat = lazy(() => import("./pages/chat"));
 const AIBot = lazy(() => import("./pages/aibot"));
 const Settings = lazy(() => import("./pages/settings"));
 const Login = lazy(() => import("@/pages/LoginPage"));
@@ -109,7 +108,6 @@ const App = () => {
                   The old /roster/create screen posted to /grouping/* on the
                   retired backend. */}
               <Route path="course/:courseId/groups" element={<Groups/>}/>
-              <Route path="chat" element={<Chat/>}/>
               <Route path="aibot" element={<AIBot/>}/>
               <Route path="settings" element={<Settings/>}/>
             </Route>

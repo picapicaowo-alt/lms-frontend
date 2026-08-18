@@ -92,11 +92,15 @@ export class ApiClient {
       }
     }
     
-    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
-      headers: config.headers,
-      data: config.data || ''
-    });
-    
+    // Method and path only, and only in development. This used to log the
+    // whole request: `headers` carries the bearer token and `data` carries the
+    // login body, so every sign-in wrote the user's password to the console —
+    // and unlike the response logger below it had no environment guard, so it
+    // shipped in the production bundle.
+    if (import.meta.env.DEV) {
+      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
+    }
+
     return config;
   }
   
@@ -105,12 +109,14 @@ export class ApiClient {
   }
   
   private handleResponse(response: AxiosResponse): AxiosResponse {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[API Response] ${response.config.method?.toUpperCase()} ${response.config.url}`, {
-        status: response.status,
-        headers: response.headers,
-        data: response.data
-      });
+    // Status only. The body was being logged too, and a login response body
+    // contains the access token. `import.meta.env.DEV` rather than
+    // process.env.NODE_ENV, which Vite does not reliably define in client code
+    // — so this guard may never have held in the first place.
+    if (import.meta.env.DEV) {
+      console.log(
+        `[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} ${response.status}`
+      );
     }
     
     return response;

@@ -1,12 +1,15 @@
-import React, {useState} from "react";
+import React from "react";
 import styles from "./index.module.scss"
-import AnnouncementManager from "../../sections/Notification/index.jsx";
 import {useWidgetLayout} from "@/pages/LmsHomePage/hooks/useWidgetLayout";
 import {Dashboard} from "@/pages/LmsHomePage/components/Dashboard";
 
+// AnnouncementManager is gone from here. It could never open — the section it
+// keys off started at 'ai' and nothing on this page ever set it to
+// 'announcement' — while shipping a hardcoded login to an undocumented host in
+// the production bundle. Announcements are read by the dashboard's own widget,
+// which uses /v2/me/announcements/recent.
 const LMSHome: React.FC = () => {
-  const [selectedChatSection, setSelectedChatSection] = useState('ai');
-  
+
   const {
     containerRef,
     width,
@@ -25,11 +28,6 @@ const LMSHome: React.FC = () => {
         mounted={mounted}
         widgetConfigs={widgetConfigs}
         containerRef={containerRef}
-      />
-      
-      <AnnouncementManager
-        selectedChatSection={selectedChatSection}
-        setSelectedChatSection={setSelectedChatSection}
       />
     </div>
   );

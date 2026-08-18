@@ -27,15 +27,10 @@ export const SIDEBAR_CONFIGS: SidebarConfig[] = [
       translationLabel: "sidebar.myCourse",
     },
   },
-  {
-    name: "Chat",
-    path: "/chat",
-    sidebarItem: {
-      filledIcon: "/icons/post_fill.png",
-      unfilledIcon: "/icons/chat_unfill.svg",
-      translationLabel: "sidebar.chat",
-    },
-  },
+  // No Chat entry. Discussions are outside V1 and the requirement is to hide
+  // the legacy RocketChat entry; the screen behind it also carried a hardcoded
+  // login to an undocumented host. The route is removed too, so that code no
+  // longer reaches the bundle.
   {
     name: "AI Chatbot",
     path: "/aibot",
