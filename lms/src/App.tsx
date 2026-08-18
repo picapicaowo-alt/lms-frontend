@@ -11,7 +11,7 @@ const CourseWorkspacePage = lazy(() => import("./pages/CourseWorkspacePage"));
 const CourseCreatePage = lazy(() => import("./pages/CourseWorkspacePage/CourseCreatePage"));
 const Post = lazy(() => import("./pages/post"));
 const PostDetail = lazy(() => import("./sections/posts/post-detail"));
-const Roster = lazy(() => import("./pages/roster"));
+const Roster = lazy(() => import("./pages/RosterPage"));
 const Profile = lazy(() => import("./pages/profile"));
 const CreateContent = lazy(() => import("./sections/dashboard/new-content/create-content"));
 const CreateGroup = lazy(() => import("./sections/roster/createGroup"));

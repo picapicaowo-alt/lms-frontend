@@ -6,6 +6,11 @@
   CourseSession,
   CourseSummary,
   CourseWeek,
+  BatchStudentEnrollResponse,
+  CourseMember,
+  MemberPageResponse,
+  MemberQueryParams,
+  TaPermissions,
   idempotent,
   UpdateCourseRequest,
   V2ApiClient
@@ -149,6 +154,124 @@ export class CourseApiService {
       return await this.apiClient.delete<void>(`/v2/courses/${courseId}`);
     } catch (error) {
       console.error(`Failed to delete course: ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  // -------------------------------------------------------------- members
+  //
+  // Course Manager only — Primary Instructor, tenant admin or system admin.
+  // A TA is never a Course Manager, whatever permission flags it holds, so
+  // none of these are available to one.
+
+  /** The enrolment list. GET-only: membership is changed through the
+   *  student and TA routes below. */
+  async getCourseMembers(
+    courseId: number,
+    params?: MemberQueryParams
+  ): Promise<ApiResponse<MemberPageResponse>> {
+    try {
+      return await this.apiClient.get<MemberPageResponse>(
+        `/v2/courses/${courseId}/members`,
+        {params}
+      );
+    } catch (error) {
+      console.error(`Failed to get members for courseId: ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Enrols students by email or user id, up to 100 per call.
+   *
+   * Partial success is normal: the response reports each identifier
+   * separately, so callers must read `items` rather than treating a 200 as
+   * "all enrolled".
+   */
+  async enrolStudents(
+    courseId: number,
+    identifiers: {userIds?: number[]; emails?: string[]}
+  ): Promise<ApiResponse<BatchStudentEnrollResponse>> {
+    try {
+      return await this.apiClient.post<BatchStudentEnrollResponse>(
+        `/v2/courses/${courseId}/students/batch`,
+        identifiers,
+        idempotent()
+      );
+    } catch (error) {
+      console.error(`Failed to enrol students in courseId: ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Withdraws a student — a soft withdrawal that sets `active` false.
+   *
+   * Their submissions and grades are untouched; INV-05 requires that. Naturally
+   * idempotent, so no Idempotency-Key.
+   */
+  async withdrawStudent(courseId: number, userId: number): Promise<ApiResponse<CourseMember>> {
+    try {
+      return await this.apiClient.delete<CourseMember>(
+        `/v2/courses/${courseId}/students/${userId}`
+      );
+    } catch (error) {
+      console.error(`Failed to withdraw student ${userId} from course ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Promotes an active student to TA in place.
+   *
+   * The target must be an active Student on this course whose platform level
+   * is STUDENT; an INSTRUCTOR is rejected with LEVEL_ENROLLMENT_MISMATCH. The
+   * promotion freezes their own assignment submissions and ends their group
+   * membership, and it grants no permissions — those are set separately.
+   */
+  async promoteToTa(courseId: number, userId: number): Promise<ApiResponse<CourseMember>> {
+    try {
+      return await this.apiClient.post<CourseMember>(
+        `/v2/courses/${courseId}/tas`,
+        {userId},
+        idempotent()
+      );
+    } catch (error) {
+      console.error(`Failed to promote user ${userId} to TA in course ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Demotes a TA back to an active Student.
+   *
+   * Not a removal from the course. Their submit freeze deliberately stays on,
+   * so a former TA does not silently regain the ability to submit work they
+   * may have seen the answers to.
+   */
+  async demoteTa(courseId: number, userId: number): Promise<ApiResponse<CourseMember>> {
+    try {
+      return await this.apiClient.delete<CourseMember>(`/v2/courses/${courseId}/tas/${userId}`);
+    } catch (error) {
+      console.error(`Failed to demote TA ${userId} in course ${courseId}`, error);
+      throw error;
+    }
+  }
+
+  /** Grants or revokes TA permissions. Partial — send only what changed. */
+  async updateTaPermissions(
+    courseId: number,
+    userId: number,
+    permissions: TaPermissions
+  ): Promise<ApiResponse<CourseMember>> {
+    try {
+      return await this.apiClient.patch<CourseMember>(
+        `/v2/courses/${courseId}/tas/${userId}/permissions`,
+        permissions,
+        idempotent()
+      );
+    } catch (error) {
+      console.error(`Failed to update TA permissions for ${userId}`, error);
       throw error;
     }
   }

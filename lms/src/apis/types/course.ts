@@ -1,4 +1,7 @@
-﻿/**
+﻿import {CourseRole} from './dashboard';
+import {UserLevel} from './login';
+
+/**
  * An entry from `GET /v2/courses` — see docs/api/course_module-api_en.md 5.1.
  *
  * This is the browse listing for admins and instructors, not a personal one:
@@ -257,4 +260,84 @@ export interface UpdateCourseRequest {
   /** Clears the field, as sending an empty string would not. */
   clearDescription?: boolean;
   clearLocation?: boolean;
+}
+// ---------------------------------------------------------------- members
+
+/**
+ * A course enrolment — `GET /v2/courses/{courseId}/members`.
+ *
+ * Course Manager only: a Student or TA calling it gets 403, so any screen
+ * built on this is staff-facing by definition.
+ *
+ * `courseRole` is the enrolment role and is independent of `level`, the
+ * platform standing. A course TA keeps `level: "STUDENT"` — the same person is
+ * a plain student in every other course (ROLE-03).
+ */
+export interface CourseMember {
+  /** Enrolment id, not the user id. */
+  id: number;
+  courseId: number;
+  userId: number;
+  userName: string;
+  userEmail: string;
+  courseRole: CourseRole;
+  /** Granted individually to a TA; false for everyone else. */
+  canGrade: boolean;
+  canPostAnnouncements: boolean;
+  canManageGroups: boolean;
+  canManageCourseEvents: boolean;
+  /** False once withdrawn. Withdrawal is a soft delete. */
+  active: boolean;
+  /** Set when a student is promoted to TA, and deliberately never cleared. */
+  assignmentSubmitFrozen: boolean;
+  level: UserLevel;
+  enrolledAt: string;
+  joinedAt: string | null;
+  withdrawnAt: string | null;
+}
+
+export interface MemberPageResponse {
+  items: CourseMember[];
+  page: number;
+  size: number;
+  total: number;
+}
+
+export interface MemberQueryParams {
+  courseRole?: CourseRole;
+  active?: boolean;
+  /** Matches name or email. */
+  q?: string;
+  page?: number;
+  size?: number;
+}
+
+/** Permissions a TA can be granted. Partial updates are allowed. */
+export interface TaPermissions {
+  canGrade?: boolean;
+  canPostAnnouncements?: boolean;
+  canManageGroups?: boolean;
+  canManageCourseEvents?: boolean;
+}
+
+export type BatchEnrollStatus = 'SUCCESS' | 'ERROR';
+
+export interface BatchEnrollItem {
+  userId: number | null;
+  status: BatchEnrollStatus;
+  /** e.g. USER_NOT_FOUND. Null when the item succeeded. */
+  errorType: string | null;
+  message: string | null;
+  member: CourseMember | null;
+}
+
+/**
+ * Result of a batch enrolment. Partial success is normal — read `items`
+ * rather than assuming the whole request applied.
+ */
+export interface BatchStudentEnrollResponse {
+  requestedCount: number;
+  successCount: number;
+  failureCount: number;
+  items: BatchEnrollItem[];
 }

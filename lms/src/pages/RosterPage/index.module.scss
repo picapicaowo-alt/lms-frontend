@@ -1,0 +1,328 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2rem 2.5rem;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+.title {
+    font-size: t.$fs-h1;
+    font-weight: t.$fw-extrabold;
+    color: t.$text;
+}
+
+.count {
+    font-size: t.$fs-label;
+    color: t.$text-muted;
+}
+
+.status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 3rem 1rem;
+    color: t.$text-muted;
+    font-size: t.$fs-label;
+}
+
+.retry,
+.primary {
+    padding: 0.55rem 1.2rem;
+    border-radius: t.$radius-control;
+    background-color: t.$brand;
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+}
+
+// ------------------------------------------------------------- enrolment
+
+.addStudents {
+    align-self: flex-start;
+    padding: 0.6rem 1.2rem;
+    border-radius: t.$radius-control;
+    border: 1px dashed t.$border;
+    color: t.$text-muted;
+    cursor: pointer;
+
+    &:hover {
+        border-color: t.$brand;
+        color: t.$brand;
+    }
+}
+
+.enrolPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.1rem;
+    border: 1px solid t.$border;
+    border-radius: t.$radius-card;
+    background-color: t.$card-bg;
+}
+
+.enrolLabel {
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+}
+
+.enrolInput {
+    width: 100%;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid t.$border;
+    border-radius: t.$radius-control-sm;
+    font-size: t.$fs-label;
+    color: t.$text;
+    resize: vertical;
+    outline: none;
+
+    &:focus {
+        border-color: t.$brand;
+    }
+}
+
+.enrolFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.enrolActions {
+    display: flex;
+    gap: 0.6rem;
+
+    button:not(.primary) {
+        padding: 0.55rem 1.1rem;
+        border-radius: t.$radius-control;
+        border: 1px solid t.$border;
+        color: t.$text;
+        cursor: pointer;
+    }
+}
+
+.enrolHint {
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+}
+
+.enrolError {
+    font-size: t.$fs-caption;
+    color: t.$danger;
+}
+
+.enrolResult {
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+}
+
+.enrolFailures {
+    margin-top: 0.3rem;
+    padding-left: 1rem;
+    list-style: disc;
+    color: t.$danger;
+}
+
+// --------------------------------------------------------------- toolbar
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.searchForm {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search {
+    min-width: 16rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid t.$border;
+    border-radius: t.$radius-control;
+    font-size: t.$fs-label;
+    outline: none;
+
+    &:focus {
+        border-color: t.$brand;
+    }
+}
+
+.searchButton {
+    padding: 0.55rem 1rem;
+    border-radius: t.$radius-control;
+    border: 1px solid t.$border;
+    color: t.$text;
+    cursor: pointer;
+
+    &:hover {
+        background-color: t.$subcard-bg;
+    }
+}
+
+.roleFilters {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.filterChip {
+    padding: 0.4rem 0.9rem;
+    border-radius: t.$radius-pill;
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+    cursor: pointer;
+
+    &:hover {
+        background-color: t.$subcard-bg;
+    }
+}
+
+.filterChipActive {
+    background-color: t.$brand;
+    color: #ffffff;
+
+    &:hover {
+        background-color: t.$brand;
+    }
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+    cursor: pointer;
+}
+
+// ----------------------------------------------------------------- table
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: t.$card-bg;
+    border: 1px solid t.$border;
+    border-radius: t.$radius-card;
+    overflow: hidden;
+
+    th {
+        text-align: left;
+        padding: 0.8rem 1rem;
+        font-size: t.$fs-caption;
+        font-weight: t.$fw-semibold;
+        color: t.$text-muted;
+        border-bottom: 1px solid t.$border;
+    }
+
+    td {
+        padding: 0.8rem 1rem;
+        font-size: t.$fs-label;
+        color: t.$text;
+        border-bottom: 1px solid t.$border;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+.withdrawnRow {
+    opacity: 0.55;
+}
+
+.email {
+    color: t.$text-muted;
+}
+
+.roleBadge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: t.$radius-pill;
+    font-size: 0.75rem;
+    font-weight: t.$fw-semibold;
+    color: #ffffff;
+}
+
+.roleInstructor { background-color: t.$brand; }
+.roleTA { background-color: t.$type-green; }
+.roleStudent { background-color: t.$text-placeholder; }
+
+.active {
+    font-size: t.$fs-caption;
+    color: t.$type-green;
+}
+
+.withdrawn {
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+}
+
+.frozen {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.7rem;
+    color: t.$type-orange;
+}
+
+.actions {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: flex-end;
+
+    button {
+        font-size: t.$fs-caption;
+        color: t.$text-muted;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            color: t.$brand;
+            text-decoration: underline;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+}
+
+.danger:hover:not(:disabled) {
+    color: t.$danger !important;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    font-size: t.$fs-caption;
+    color: t.$text-muted;
+
+    button {
+        padding: 0.45rem 1rem;
+        border-radius: t.$radius-control;
+        border: 1px solid t.$border;
+        cursor: pointer;
+
+        &:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+    }
+}
