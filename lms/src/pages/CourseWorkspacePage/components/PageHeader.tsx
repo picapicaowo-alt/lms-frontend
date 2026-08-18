@@ -20,18 +20,11 @@ export const PageHeader: React.FC = () => {
           >
             {t("detail.editCourse")}
           </button>
-          {/* Publishing happens per week — POST .../weeks/{id}/publish — and
-              there is no course-level publish to call. Whether a course, a
-              week or an item is the unit of publication is still open (S-6),
-              so the button keeps its place in the design but does nothing
-              rather than guessing which of those it means. */}
-          <button
-            className={styles.publishButton}
-            disabled
-            title={t("detail.publishUnavailable")}
-          >
-            {t("addContent.publishButton")}
-          </button>
+          {/* No Publish button. Publishing exists per week —
+              POST .../weeks/{id}/publish, which the week list offers — and
+              there is no course-level call to make. A control that cannot do
+              anything is worse than an absent one, so it is left out rather
+              than shown disabled (S-6). */}
         </React.Fragment>
       ) : null;
     }

@@ -1,47 +1,20 @@
-import React, {useState} from "react";
+import React from "react";
 import styles from "./CourseComponent.module.scss";
 import CourseCard from "./CourseCard";
 import {useCourseList} from "@/pages/LmsHomePage/hooks/useCourseList";
 
-// Figma shows All / Collect / HW1 pills here. Only "All" has any meaning
-// against the current API — there is no favourites or per-assignment filter on
-// /v2/me/courses — so the other two stay visibly disabled rather than
-// pretending to filter. See open-decisions.md S-4 (course favourites).
-const FILTERS = [
-  {label: "All", enabled: true},
-  {label: "Collect", enabled: false},
-  {label: "HW1", enabled: false},
-] as const;
+// Figma puts All / Collect / HW1 filter pills in this header. None of them
+// exist: /v2/me/courses has no favourites list and no per-assignment filter,
+// and "All" on its own filters nothing. The row is left out rather than shown
+// greyed out, which would only advertise something that is not coming (S-4).
 
 const CourseComponent: React.FC = () => {
   const {courses, isLoading, isError, refetch} = useCourseList();
-  const [selected, setSelected] = useState<string>("All");
 
   return (
     <>
       <div className="flex justify-between items-center">
         <h1 className="font-semibold text-[1.2rem] text-primary-color ml-1">My Course</h1>
-        <div className="flex-1"/>
-        <div className="flex gap-2">
-          {FILTERS.map(({label, enabled}) => (
-            <button type="button"
-                    key={label}
-                    disabled={!enabled}
-                    title={enabled ? undefined : "Not available yet"}
-                    onClick={() => setSelected(label)}
-                    className={`px-4 py-1 rounded-lg font-medium transition
-                            ${selected === label
-                      ? "bg-[rgba(86,111,232,1)] text-white"
-                      : "bg-transparent text-gray-400"}
-                            ${enabled
-                      ? "cursor-pointer hover:text-gray-600"
-                      : "opacity-40 cursor-not-allowed"}
-                        `}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
       </div>
       <div className={styles.horizontalLine}/>
 

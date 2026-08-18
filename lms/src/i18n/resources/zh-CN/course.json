@@ -50,8 +50,7 @@
         "filterByLabel": "按标签筛选：",
         "filterAll": "全部",
         "searchAssignmentsPlaceholder": "按名称搜索作业……",
-        "untitledPagePlaceholder": "未命名页面",
-        "publishUnavailable": "目前只能按周发布，暂不支持整门课程发布。"
+        "untitledPagePlaceholder": "未命名页面"
     },
     "form": {
         "titleLabel": "课程标题",

@@ -50,8 +50,7 @@
         "filterByLabel": "Filter by label:",
         "filterAll": "All",
         "searchAssignmentsPlaceholder": "Search assignments by name...",
-        "untitledPagePlaceholder": "Untitled page",
-        "publishUnavailable": "Publishing is done per week, not for the whole course yet."
+        "untitledPagePlaceholder": "Untitled page"
     },
     "form": {
         "titleLabel": "Course title",
