@@ -1,24 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {useEditor, EditorContent} from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
-import Heading from '@tiptap/extension-heading';
-import Bold from '@tiptap/extension-bold';
-import Italic from '@tiptap/extension-italic';
-import Underline from '@tiptap/extension-underline';
-import Strike from '@tiptap/extension-strike';
-import BulletList from '@tiptap/extension-bullet-list';
-import OrderedList from '@tiptap/extension-ordered-list';
-import ListItem from '@tiptap/extension-list-item';
-import Link from '@tiptap/extension-link';
-import Blockquote from '@tiptap/extension-blockquote';
-import Code from '@tiptap/extension-code';
-import CodeBlock from '@tiptap/extension-code-block';
-import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import Toolbar from './Toolbar';
 import styles from './index.module.scss';
-import {Markdown} from "tiptap-markdown";
-import {BlankNode} from './extensions/BlankNode';
+// The extension list lives beside this file so it can be checked without
+// mounting an editor — see extensions.test.ts.
+import {createEditorExtensions} from './extensions';
 
 interface TextBlockProps {
   content?: string;
@@ -38,13 +24,15 @@ export const RichTextEditor: React.FC<TextBlockProps> = (props) => {
   const [isInitialized, setIsInitialized] = useState(false);
   
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setShouldRender(true);
-      
-      requestAnimationFrame(() => {
-        setIsInitialized(true);
-      });
-    }
+    if (typeof window === 'undefined') return;
+
+    setShouldRender(true);
+    const frame = requestAnimationFrame(() => setIsInitialized(true));
+
+    // Cancel it on unmount. Left pending, the callback sets state on a
+    // component that is already gone, and React reports it as unmounting a
+    // root mid-render.
+    return () => cancelAnimationFrame(frame);
   }, []);
   
   if (!shouldRender) {
@@ -86,46 +74,7 @@ const RichTextEditorClient: React.FC<TextBlockProps> = ({
   const [toolbarVisible, setToolbarVisible] = React.useState(defaultToolbarVisible);
   
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        horizontalRule: false,
-      }),
-      Heading.configure({
-        levels: [1, 2, 3],
-      }),
-      Bold,
-      Italic,
-      Underline,
-      Strike,
-      BulletList,
-      OrderedList,
-      ListItem,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: styles.link,
-        },
-      }),
-      Blockquote,
-      Code,
-      CodeBlock,
-      HorizontalRule,
-      Placeholder.configure({
-        placeholder,
-        emptyEditorClass: styles.placeholder,
-      }),
-      Markdown.configure({
-        html: false,
-        tightLists: true,
-        tightListClass: 'tight',
-        bulletListMarker: '-',
-        linkify: true,
-        breaks: true,
-      }),
-      BlankNode.configure({
-        mode: disabled ? 'student' : 'teacher',
-      })
-    ],
+    extensions: createEditorExtensions({placeholder, disabled}),
     content,
     editable: !disabled,
     onUpdate: ({editor}) => {
@@ -143,7 +92,9 @@ const RichTextEditorClient: React.FC<TextBlockProps> = ({
         'data-testid': 'text-block-editor',
         spellcheck: 'true',
       },
-      mode: disabled ? 'student' : 'teacher',
+      // No `mode` here. editorProps is ProseMirror's own options object and
+      // ignores unknown keys, so this never reached anything — BlankNode is
+      // the extension that takes a mode, and it receives one directly.
     },
   });
   
